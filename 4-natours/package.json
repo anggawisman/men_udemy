@@ -16,7 +16,8 @@
     "morgan": "^1.10.0",
     "nodemon": "^2.0.20",
     "slugify": "^1.6.5",
-    "superagent": "^8.0.9"
+    "superagent": "^8.0.9",
+    "validator": "^13.9.0"
   },
   "devDependencies": {
     "eslint": "^8.34.0",
