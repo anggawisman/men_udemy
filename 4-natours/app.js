@@ -31,9 +31,26 @@ app.use('/api/v1/users', userRouter); // parent route, it's also called mounting
 // HANDLE UNHANDLE ROUTE makesure this route on bot of others route
 app.all('*', (req, res, next) => {
   // "*" means anything
-  res.status(404).json({
-    status: 'fail',
-    message: `Can't find ${req.originalUrl} on this server!`,
+  // res.status(404).json({
+  //   status: 'fail',
+  //   message: `Can't find ${req.originalUrl} on this server!`,
+  // });
+
+  const err = new Error(`Can't find ${req.originalUrl} on this server!`);
+  err.status = 'fail';
+  err.statusCode = 404;
+
+  next(err);
+});
+
+// Global Operational Error Handling Middleware with Express
+app.use((err, req, res, next) => {
+  err.statusCode = err.statusCode || 500;
+  err.status = err.status || 'error';
+
+  res.status(err.statusCode).json({
+    status: err.status,
+    message: err.message,
   });
 });
 
