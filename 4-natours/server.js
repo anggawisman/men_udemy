@@ -4,24 +4,27 @@ const dotenv = require('dotenv');
 dotenv.config({ path: './.env' });
 const app = require('./app');
 
-
 // console.log(app.get('env'));
 // console.log(process.env);
 
-const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DATABASE_PASSWORD)
+const DB = process.env.DATABASE.replace(
+  '<PASSWORD>',
+  process.env.DATABASE_PASSWORD
+);
 
 mongoose
   // .connect(process.env.DATABASE_LOCAL, {
-  .connect(DB, { // live DB
+  .connect(DB, {
+    // live DB
     useNewUrlParser: true,
     useCreateIndex: true,
-    useFindAndModify: false
-  }).then(() => {
+    useFindAndModify: false,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
     // console.log(con.connections);
     console.log('DB connection success');
-
-});
-
+  });
 
 // 4) START SERVER
 

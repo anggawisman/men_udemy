@@ -1,70 +1,156 @@
 const Tour = require(`./../models/tourModel`);
-
-
-// middleware checkBody
-exports.checkBody = (req, res, next) => {
-  console.log(`Tour body is: ${JSON.stringify(req.body)}`);
-
-  if (!req.body.name || !req.body.price) {
-    return res.status(400).json({
-      status: 'fail',
-      message: 'Name or Price not assign',
-    });
-  }
-  next();
-};
-
+const APIFeatures = require('../utils/apiFeatures');
 
 // Routes Handlers or Controller
 
-exports.getAllTours = (req, res) => {
-    console.log(req.requestTime);
-    res.status(200).json({
-      status: 'successssss',
-      requestedAt: req.requestTime,
-      // results: tours.length,
-      // data: {
-      //   tours: tours,
-      // },
-    });
-  };
-  
-exports.getTour = (req, res) => {
-    console.log(req.params);
-    const id = req.params.id * 1; // this is to convert string to a number
-    // const tour = tours.find((el) => el.id === id);
+exports.aliasTopTours = (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = 'price,-ratingsAverage';
+  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+  next();
+};
 
-    // res.status(200).json({
-    //   status: 'successssss',
-    //   data: {
-    //     tour,
-    //   },
-    // });
-  };
-  
-exports.createNewTours = (req, res) => {
-  res.status(201).json({
-    status: 'success',
-    // data: {
-    //   tour: newTour,
-    // },
-  });
-  };
-  
-exports.updateTour = (req, res) => {
-      
+exports.getAllTours = async (req, res) => {
+  try {
+    console.log(req.query);
+
+    // EXECUTE QUERY
+    const features = new APIFeatures(Tour.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .pagination();
+    const tours = await features.query;
+
+    // SEND RESPONSE
+    res.status(200).json({
+      status: 'success',
+      results: tours.length,
+      data: {
+        tours: tours,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err,
+    });
+  }
+};
+
+exports.getTour = async (req, res) => {
+  try {
+    const tour = await Tour.findById(req.params.id);
+    // Tour.findOne({_id: req.params.id})
     res.status(200).json({
       status: 'success',
       data: {
-        tour: '<Updated tour here>',
+        tour,
       },
     });
-  };
-  
-exports.deleteTour = (req, res) => {
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err,
+    });
+  }
+};
+
+exports.createNewTours = async (req, res) => {
+  try {
+    const newTour = await Tour.create(req.body);
+
+    res.status(201).json({
+      status: 'success',
+      data: {
+        tour: newTour,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err,
+    });
+  }
+
+  // const newTour = new Tour({
+  //   name: req.body.name,
+  //   price: req.body.price,
+  //   rating: req.body.rating,
+
+  // });
+
+  // newTour.save().then(doc => {
+  //   console.log(doc);
+  // }).catch(err => {
+  //   console.log('ERROR: ',err)
+  // })
+};
+
+exports.updateTour = async (req, res) => {
+  try {
+    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tour,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err,
+    });
+  }
+};
+
+exports.deleteTour = async (req, res) => {
+  try {
+    await Tour.findByIdAndDelete(req.params.id);
     res.status(204).json({
       status: 'success',
       data: null,
     });
-  };
-  
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err,
+    });
+  }
+};
+
+exports.getTourStats = async (req, res) => {
+  try {
+    const stats = await Tour.aggregate([
+      {
+        $match: { ratingsAverage: { $gte: 4.5 } },
+      },
+      {
+        $group: {
+          _id: null,
+          num: { $sum: 1 },
+          numRatings: { $sum: '$ratingsQuantity' },
+          avgRating: { $avg: '$ratingsAverage' },
+          avgPrice: { $avg: '$price' },
+          minPrice: { $min: '$price' },
+          maxPrice: { $max: '$price' },
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        stats,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err,
+    });
+  }
+};
