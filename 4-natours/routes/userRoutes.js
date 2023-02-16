@@ -6,6 +6,7 @@ const router = express.Router();
 
 // SIGNUP
 router.post('/signup', authController.signUp);
+router.post('/login', authController.login);
 
 // REST FORMAT because possibility of a system administrator updating, deleting, getting all the users based on their ID.
 router
