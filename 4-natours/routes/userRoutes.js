@@ -10,7 +10,7 @@ router.post('/login', authController.login);
 
 // ABOUT PASSWORD
 router.post('/forgotPassword', authController.forgotPassword);
-router.post('/resetPassword', authController.resetPassword);
+router.patch('/resetPassword/:token', authController.resetPassword);
 
 // REST FORMAT because possibility of a system administrator updating, deleting, getting all the users based on their ID.
 router
