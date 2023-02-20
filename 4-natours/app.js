@@ -4,6 +4,7 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
+const hpp = require('hpp');
 
 const globalErrorHandler = require('./controllers/errorController');
 const AppError = require('./utils/appError');
@@ -45,6 +46,20 @@ app.use(mongoSanitize());
 
 // Data Sanitization againts XSS
 app.use(xss());
+
+// Prevent Parameter Pollution
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'maxGroupSize',
+      'difficulty',
+      'price ',
+    ],
+  })
+); // hpp stand for HTTP Parameter Pollution
 
 // Serving static files
 app.use(express.static(`${__dirname}/public`)); // to specify or serve static file from the folder not the route
