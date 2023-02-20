@@ -17,6 +17,11 @@ router.patch(
   authController.updatePassword
 );
 
+// UPDATE ME
+router.patch('/updateMe', authController.portect, userController.updateMe);
+
+router.delete('/deleteMe', authController.portect, userController.deleteMe);
+
 // REST FORMAT because possibility of a system administrator updating, deleting, getting all the users based on their ID.
 router
   .route('/')
