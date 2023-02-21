@@ -9,6 +9,7 @@ const hpp = require('hpp');
 const globalErrorHandler = require('./controllers/errorController');
 const AppError = require('./utils/appError');
 const tourRouter = require('./routes/tourRoutes');
+const reviewRouter = require('./routes/reviewRoutes');
 const userRouter = require('./routes/userRoutes');
 
 const app = express();
@@ -74,6 +75,7 @@ app.use((req, res, next) => {
 // 2) ROUTE HANDLERS/CONTROLLERS is divide it to controllers folder
 
 // 3) ROUTES is divide it to routes folder
+app.use('/api/v1/reviews', reviewRouter); // parent route
 app.use('/api/v1/tours', tourRouter); // parent route
 app.use('/api/v1/users', userRouter); // parent route, it's also called mounting a new router
 

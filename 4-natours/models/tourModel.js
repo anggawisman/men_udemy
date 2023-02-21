@@ -124,6 +124,13 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
+// Virtual Populate
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
+});
+
 // DOCUMENT MIDDLEWARE: runs before .save() and .create, So if we use this command here, so insertMany, then that will actually not trigger the save middleware.
 
 tourSchema.pre('save', function (next) {
