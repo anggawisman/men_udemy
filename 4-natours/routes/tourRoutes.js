@@ -1,6 +1,7 @@
 const express = require('express');
 const tourController = require('../controllers/tourController');
 const authController = require('../controllers/authController');
+const reviewController = require('../controllers/reviewController');
 
 //Routes
 const router = express.Router();
@@ -26,6 +27,16 @@ router
     authController.portect,
     authController.restrictTo('admin', 'lead-guide'),
     tourController.deleteTour
+  );
+
+// POST /tour/4314fws/reviews
+// NESTED ROUTE
+router
+  .route('/:tourId/reviews')
+  .post(
+    authController.portect,
+    authController.restrictTo('user'),
+    reviewController.createReview
   );
 
 module.exports = router;
