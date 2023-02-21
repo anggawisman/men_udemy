@@ -11,7 +11,14 @@ router
   .post(
     authController.portect,
     authController.restrictTo('user'),
+    reviewController.setTourUserIds,
     reviewController.createReview
-  ); // in the left middleware will run first
+  );
+
+router
+  .route('/:id')
+  .get(reviewController.getReview)
+  .delete(reviewController.deleteReview)
+  .patch(reviewController.updateReview);
 
 module.exports = router;

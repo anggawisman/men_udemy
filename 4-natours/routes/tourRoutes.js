@@ -29,7 +29,7 @@ router.route('/monthly-plan/:year').get(tourController.getMonthlyPlan);
 router
   .route('/')
   .get(authController.portect, tourController.getAllTours)
-  .post(tourController.createNewTours); // in the left middleware will run first
+  .post(tourController.createNewTour); // in the left middleware will run first
 
 router
   .route('/:id')
