@@ -76,7 +76,7 @@ exports.login = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
-exports.portect = catchAsync(async (req, res, next) => {
+exports.protect = catchAsync(async (req, res, next) => {
   // 1) Getting to token and check if it's there
   let token;
   if (
