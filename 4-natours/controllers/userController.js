@@ -13,7 +13,10 @@ const filterObj = (obj, ...allowedFields) => {
   return newObj;
 };
 
-exports.getAllUsers = factory.getAll(User);
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
 
 exports.updateMe = catchAsync(async (req, res, next) => {
   // 1) create error if user POSTs password data
@@ -58,6 +61,7 @@ exports.createUser = (req, res) => {
   });
 };
 
+exports.getAllUsers = factory.getAll(User);
 exports.getUser = factory.getOne(User);
 // Do NOT update passwords with this
 exports.updateUser = factory.updateOne(User);

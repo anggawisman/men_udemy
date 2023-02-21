@@ -1,6 +1,7 @@
 const express = require('express');
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
+const { route } = require('./reviewRoutes');
 
 const router = express.Router();
 
@@ -21,6 +22,13 @@ router.patch(
 router.patch('/updateMe', authController.portect, userController.updateMe);
 
 router.delete('/deleteMe', authController.portect, userController.deleteMe);
+
+router.get(
+  '/me',
+  authController.portect,
+  userController.getMe,
+  userController.getUser
+);
 
 // REST FORMAT because possibility of a system administrator updating, deleting, getting all the users based on their ID.
 router.route('/').get(userController.getAllUsers);
