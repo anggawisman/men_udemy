@@ -85,7 +85,10 @@ app.use((req, res, next) => {
 // 3) ROUTES
 // Pug Routes
 app.get('/', (req, res) => {
-  res.status(200).render('base'); //render will render the template with the name, express will handle pug
+  res.status(200).render('base', {
+    tour: 'The Forest Hiker',
+    user: 'Babang Tampan'
+  }); //render will render the template with the name, express will handle pug
 });
 
 // API Routes is divide it to routes folder
