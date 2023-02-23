@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
@@ -14,9 +15,15 @@ const userRouter = require('./routes/userRoutes');
 
 const app = express();
 
+// define template view engine
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
 console.log(process.env.NODE_ENV);
 
 // 1) GLOBAL MIDDLEWARE
+// Serving static files
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Set Security HTTP headers
 app.use(helmet());
@@ -63,7 +70,8 @@ app.use(
 ); // hpp stand for HTTP Parameter Pollution
 
 // Serving static files
-app.use(express.static(`${__dirname}/public`)); // to specify or serve static file from the folder not the route
+// app.use(express.static(`${__dirname}/public`)); // to specify or serve static file from the folder not the route
+// app.use(express.static(path.join__dirname, `public`));
 
 // Test middleware
 app.use((req, res, next) => {
@@ -74,7 +82,13 @@ app.use((req, res, next) => {
 
 // 2) ROUTE HANDLERS/CONTROLLERS is divide it to controllers folder
 
-// 3) ROUTES is divide it to routes folder
+// 3) ROUTES
+// Pug Routes
+app.get('/', (req, res) => {
+  res.status(200).render('base'); //render will render the template with the name, express will handle pug
+});
+
+// API Routes is divide it to routes folder
 app.use('/api/v1/reviews', reviewRouter); // parent route
 app.use('/api/v1/tours', tourRouter); // parent route
 app.use('/api/v1/users', userRouter); // parent route, it's also called mounting a new router
