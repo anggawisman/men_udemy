@@ -1,6 +1,27 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
+const mqtt = require('mqtt')
+const client = mqtt.connect('mqtt://localhost:1883')
+
+client.on('connect', function () {
+  client.subscribe('ready', function (err) {
+    if (!err) {
+      console.log("Subscription successfull")
+    }
+  })
+})
+
+client.on('message', function (topic, message) {
+  // message is Buffer
+  if (topic == "ready") {
+    console.log(message.toString())
+  }
+
+})
+
+
+
 // HANDLE ERROR CATCHING UNCAUGHT EXCEPTIONS
 process.on('uncaughtException', (err) => {
   console.log('UNCAUGHT EXCEPTIONS !!! Shuting down...');

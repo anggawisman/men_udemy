@@ -13,6 +13,7 @@ const tourRouter = require('./routes/tourRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const userRouter = require('./routes/userRoutes');
 const viewRouter = require('./routes/viewRoutes');
+const mqttRouter = require('./routes/mqttRoutes');
 
 const app = express();
 
@@ -86,6 +87,7 @@ app.use((req, res, next) => {
 // 3) ROUTES
 // Pug Routes
 app.use('/', viewRouter); // parent route
+app.use('/api/asaa', mqttRouter); // parent route
 // API Routes is divide it to routes folder
 app.use('/api/v1/reviews', reviewRouter); // parent route
 app.use('/api/v1/tours', tourRouter); // parent route

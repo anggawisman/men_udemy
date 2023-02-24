@@ -1,0 +1,84 @@
+router.route("/generateTask").post(async (req, res) => {
+    const userName = req.body.userName;
+    const station = req.body.stationName;
+    console.log(req.body.userName, req.body.stationName);
+    try {
+        const StationPosition = await stationNames.findOne({
+            userName: userName,
+            station: station,
+        });
+        const qcPosition = await stationNames.findOne({
+            userName: req.body.userName,
+            station: "QC point",
+        });
+        const storagePosition = await stationNames.findOne({
+            userName: req.body.userName,
+            station: "Storage point",
+        });
+        const outPosition = await stationNames.findOne({
+            userName: req.body.userName,
+            station: "Out point",
+        });
+        const taskType = "SFTX01";
+
+        if (StationPosition != undefined) {
+            var dateNow = new Date().toISOString().split(".")[0];
+            var reqCodeData =
+                "TASK_" + dateNow + "_" + Math.floor(Math.random() * 1000).toString();
+
+            var agvJobData = {
+                reqCode: reqCodeData,
+                reqTime: "",
+                clientCode: "",
+                tokenCode: "",
+                taskTyp: taskType,
+                wbCode: "",
+                positionCodePath: [
+                    {
+                        positionCode: StationPosition.callPath,
+                        type: "00",
+                    },
+                    {
+                        positionCode: qcPosition.callPath,
+                        type: "00",
+                    },
+                    {
+                        positionCode: storagePosition.callPath,
+                        type: "00",
+                    },
+                    {
+                        positionCode: outPosition.callPath,
+                        type: "00",
+                    },
+                ],
+                podDir: "",
+                taskCode: reqCodeData,
+            };
+            console.log(agvJobData);
+            var genTask = await axios.post(
+                "http://172.16.1.35:8181/rcms/services/rest/hikRpcService/genAgvSchedulingTask",
+                agvJobData
+            );
+            if (genTask.data.message === "successful") {
+                dataToSave = {
+                    reqCode: reqCodeData,
+                    taskCode: reqCodeData,
+                    taskType: taskType,
+                    robotCode: "",
+                    statusAgv: "",
+                    line: station,
+                    stationId: userName,
+                };
+                var insertData = await robotTaskModel.insertMany(dataToSave);
+                console.log("Add Data " + reqCodeData + " Success");
+                res.json("masuk");
+            } else {
+                res.json("Failed");
+                console.log(genTask.data);
+            }
+        }
+    } catch (e) {
+        console.log(e);
+        res.status(400).send({ message: e });
+    }
+});
